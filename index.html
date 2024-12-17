@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ouverture de Booster Pokémon</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
         <button id="open-free-booster">Ouvrir un Booster Gratuit</button>
         <button id="open-rare-booster">Ouvrir un Booster Rare (500 Pokécoins)</button>
-        <button id="open-legendary-booster">Ouvrir un Booster Légendaire (2000 Pokécoins)</button>
+        <button id="open-legendary-booster">Ouvrir un Booster Légendaire (1000 Pokécoins)</button>
         <button id="view-collection">Ma Collection (<span id="collection-count">0</span>)</button>
         <button id="view-stats">Statistiques</button>
         <button id="view-users">Utilisateurs</button>
+        <button id="view-shop">Boutique</button>
         <span id="pokecoin-count">Pokécoins : 0</span>
+        <span id="logs-link-container"></span>
     </header>
 
     <main>
@@ -56,6 +59,23 @@
             <h3>Classement par nombre de Pokécoins</h3>
             <ul id="ranking-pokecoins" class="ranking-list"></ul>
         </section>
+
+        <!-- Boutique Section -->
+        <section id="shop-section" style="display: none;">
+            <h2>Boutique</h2>
+            <div id="shop-container">
+                <div class="shop-item">
+                    <i class="fas fa-clover shop-icon"></i>
+                    <p>Obtenir 10 % de chance en plus</p>
+                    <button onclick="buyUpgrade('extraChance10')">Acheter (10000 Pokécoins)</button>
+                </div>
+                <div class="shop-item">
+                    <i class="fas fa-clover shop-icon"></i>
+                    <p>Obtenir 20 % de chance en plus</p>
+                    <button onclick="buyUpgrade('extraChance20')">Acheter (20000 Pokécoins)</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Modal -->
@@ -72,6 +92,52 @@
         if (!localStorage.getItem('currentUser')) {
             window.location.href = 'login.html';
         }
+
+        // Afficher le lien des logs uniquement pour l'utilisateur "Rob1"
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser === 'Rob1') {
+                const logsLinkContainer = document.getElementById('logs-link-container');
+                logsLinkContainer.innerHTML = '<a href="logs.html" target="_blank">Voir les Logs</a>';
+            }
+        });
+
+        // Ajouter des médailles aux classements
+        function addMedals(rankingList) {
+            const medals = ['🥇', '🥈', '🥉'];
+            rankingList.querySelectorAll('li').forEach((item, index) => {
+                if (index < 3) {
+                    item.innerHTML = `${medals[index]} ${item.innerHTML}`;
+                }
+            });
+        }
+
+        // Afficher les classements
+        function displayRankings() {
+            const rankingCards = document.getElementById("ranking-cards");
+            const rankingBoosters = document.getElementById("ranking-boosters");
+            const rankingPokecoins = document.getElementById("ranking-pokecoins");
+
+            // ...existing code to populate rankings...
+
+            addMedals(rankingCards);
+            addMedals(rankingBoosters);
+            addMedals(rankingPokecoins);
+        }
+
+        // Appeler displayRankings après avoir peuplé les classements
+        document.addEventListener('DOMContentLoaded', displayRankings);
+
+        // Ajouter des icônes aux utilisateurs
+        function addIconsToUsers() {
+            const usersList = document.getElementById('users-list');
+            usersList.querySelectorAll('li').forEach((item) => {
+                item.innerHTML = `<i class="fas fa-user"></i> ${item.innerHTML}`;
+            });
+        }
+
+        // Appeler addIconsToUsers après avoir peuplé la liste des utilisateurs
+        document.addEventListener('DOMContentLoaded', addIconsToUsers);
     </script>
     <script src="script.js"></script>
 </body>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs des Joueurs - Ouverture de Booster Pokémon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Logs des Joueurs</h1>
+    </header>
+
+    <main>
+        <section id="logs-section">
+            <h2>Historique des Actions</h2>
+            <div id="logs-container"></div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const logsContainer = document.getElementById('logs-container');
+            const logs = localStorage.getItem('gameLogs') || 'Aucun log disponible.';
+            const logsByPlayer = {};
+
+            // Regrouper les logs par joueur
+            logs.split('\n').forEach(log => {
+                if (log.trim()) {
+                    const [timestamp, user, action] = log.split(' - ');
+                    if (!logsByPlayer[user]) {
+                        logsByPlayer[user] = [];
+                    }
+                    logsByPlayer[user].push({ timestamp, action });
+                }
+            });
+
+            // Afficher les logs par joueur
+            for (const user in logsByPlayer) {
+                const userLogs = logsByPlayer[user];
+                const userSection = document.createElement('div');
+                userSection.classList.add('user-logs');
+
+                const userTitle = document.createElement('h3');
+                userTitle.textContent = `Joueur : ${user}`;
+                userSection.appendChild(userTitle);
+
+                userLogs.forEach(log => {
+                    const logEntry = document.createElement('p');
+                    logEntry.textContent = `${log.timestamp} - ${log.action}`;
+                    userSection.appendChild(logEntry);
+                });
+
+                logsContainer.appendChild(userSection);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -229,3 +229,155 @@ h1 {
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+
+/* Section Boutique */
+#shop-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #111; /* Fond sombre */
+    border: 2px solid #444;
+    border-radius: 10px;
+}
+
+.shop-item {
+    background-color: #222; /* Fond légèrement plus clair */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: #ccc; /* Texte clair */
+    font-size: 1.1em;
+    text-align: center;
+    position: relative;
+}
+
+.shop-item .shop-icon {
+    font-size: 30px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.shop-item button {
+    background-color: #444; /* Fond légèrement plus clair */
+    color: #fff; /* Texte blanc */
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s; /* Animation fluide */
+}
+
+.shop-item button:hover {
+    background-color: #666; /* Fond encore plus clair au survol */
+    transform: scale(1.05); /* Léger agrandissement au survol */
+}
+
+/* Styles pour les logs */
+#logs-section {
+    margin: 20px;
+    padding: 20px;
+    background-color: #111; /* Fond sombre */
+    border: 2px solid #444;
+    border-radius: 10px;
+}
+
+#logs-container {
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #222; /* Fond légèrement plus clair */
+    padding: 10px;
+    border-radius: 5px;
+    color: #ccc; /* Texte clair */
+}
+
+.user-logs {
+    margin-bottom: 20px;
+}
+
+.user-logs h3 {
+    color: #fff; /* Texte clair */
+    margin-bottom: 10px;
+}
+
+.user-logs p {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: #333; /* Fond encore plus clair */
+    border-radius: 5px;
+    color: #fff; /* Texte encore plus clair */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    #booster-container, #collection-section, #stats-section, #users-section, #shop-section {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .card {
+        width: 100px;
+        margin: 5px;
+    }
+
+    .shop-item {
+        padding: 15px;
+    }
+
+    .shop-item .shop-icon {
+        font-size: 25px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    #booster-container, #collection-section, #stats-section, #users-section, #shop-section {
+        margin: 5px;
+        padding: 10px;
+    }
+
+    .card {
+        width: 80px;
+        margin: 5px;
+    }
+
+    .shop-item {
+        padding: 10px;
+    }
+
+    .shop-item .shop-icon {
+        font-size: 20px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 10px;
+    }
+}

@@ -20,8 +20,8 @@ const cardsData = [
 const boosterProbabilities = {
     free: {
         common: 0.8,
-        rare: 0.195,
-        "ultra-rare": 0.005,
+        rare: 0.199,
+        "ultra-rare": 0.001,
     },
     rare: {
         common: 0.4,
@@ -52,6 +52,18 @@ let ultraRareCount = 0;
 let currentUser = '';
 let playtime = 0;
 let playtimeInterval;
+let extraChance = 0; // Variable pour stocker l'amélioration de chance
+
+// Fonction pour enregistrer les logs
+function logAction(action) {
+    const logEntry = `${new Date().toISOString()} - ${currentUser} - ${action}\n`;
+    console.log(logEntry); // Afficher le log dans la console
+
+    // Enregistrer le log dans localStorage
+    let logs = localStorage.getItem('gameLogs') || '';
+    logs += logEntry;
+    localStorage.setItem('gameLogs', logs);
+}
 
 // Fonction pour tirer une carte aléatoire en respectant les probabilités du booster
 function getRandomCard(boosterType) {
@@ -60,7 +72,7 @@ function getRandomCard(boosterType) {
     const probabilities = boosterProbabilities[boosterType];
 
     for (const rarity in probabilities) {
-        accumulatedProbability += probabilities[rarity];
+        accumulatedProbability += probabilities[rarity] * (1 + extraChance); // Appliquer l'amélioration de chance
         if (random <= accumulatedProbability) {
             const filteredCards = cardsData.filter(card => card.rarity === rarity);
             return filteredCards[Math.floor(Math.random() * filteredCards.length)];
@@ -70,6 +82,7 @@ function getRandomCard(boosterType) {
 
 // Fonction pour ouvrir un booster (5 cartes)
 function openBooster(boosterType) {
+    logAction(`Ouvrir un booster de type ${boosterType}`);
     const boosterOpening = document.getElementById("booster-opening");
     const boosterImage = document.getElementById("booster-image");
     const cardsContainer = document.getElementById("cards-container");
@@ -131,6 +144,7 @@ function updateCollection(newCards) {
                     pokecoins += 5;
                     break;
             }
+            logAction(`Carte en doublon : ${card.name} (${card.rarity})`);
         } else {
             // Ajouter la carte à la collection
             collection.push(card);
@@ -146,6 +160,7 @@ function updateCollection(newCards) {
                     ultraRareCount++;
                     break;
             }
+            logAction(`Nouvelle carte ajoutée : ${card.name} (${card.rarity})`);
         }
     });
 
@@ -220,7 +235,7 @@ function toggleUsers() {
         // Afficher la liste des utilisateurs
         users.forEach(user => {
             const userElement = document.createElement("li");
-            userElement.textContent = user;
+            userElement.innerHTML = `<i class="fas fa-user"></i> ${user}`;
             usersList.appendChild(userElement);
         });
 
@@ -228,7 +243,7 @@ function toggleUsers() {
         userData.sort((a, b) => b.collectionSize - a.collectionSize);
         userData.forEach(user => {
             const userElement = document.createElement("li");
-            userElement.textContent = `${user.username}: ${user.collectionSize} cartes`;
+            userElement.innerHTML = `<i class="fas fa-user"></i> ${user.username}: ${user.collectionSize} cartes`;
             rankingCards.appendChild(userElement);
         });
 
@@ -236,7 +251,7 @@ function toggleUsers() {
         userData.sort((a, b) => b.boosterCount - a.boosterCount);
         userData.forEach(user => {
             const userElement = document.createElement("li");
-            userElement.textContent = `${user.username}: ${user.boosterCount} boosters`;
+            userElement.innerHTML = `<i class="fas fa-user"></i> ${user.username}: ${user.boosterCount} boosters`;
             rankingBoosters.appendChild(userElement);
         });
 
@@ -244,14 +259,29 @@ function toggleUsers() {
         userData.sort((a, b) => b.pokecoins - a.pokecoins);
         userData.forEach(user => {
             const userElement = document.createElement("li");
-            userElement.textContent = `${user.username}: ${user.pokecoins} Pokécoins`;
+            userElement.innerHTML = `<i class="fas fa-user"></i> ${user.username}: ${user.pokecoins} Pokécoins`;
             rankingPokecoins.appendChild(userElement);
         });
+
+        // Ajouter des médailles aux classements
+        addMedals(rankingCards);
+        addMedals(rankingBoosters);
+        addMedals(rankingPokecoins);
 
         usersSection.style.display = "block";
     } else {
         usersSection.style.display = "none";
     }
+}
+
+// Fonction pour ajouter des médailles aux classements
+function addMedals(rankingList) {
+    const medals = ['🥇', '🥈', '🥉'];
+    rankingList.querySelectorAll('li').forEach((item, index) => {
+        if (index < 3) {
+            item.innerHTML = `${medals[index]} ${item.innerHTML}`;
+        }
+    });
 }
 
 // Fonction pour afficher la modal avec les détails de la carte
@@ -292,9 +322,11 @@ function saveGame() {
             commonCount,
             rareCount,
             ultraRareCount,
-            playtime
+            playtime,
+            extraChance
         };
         localStorage.setItem(`pokemonGame_${currentUser}`, JSON.stringify(gameData));
+        logAction("Sauvegarde de la partie");
     }
 }
 
@@ -305,13 +337,14 @@ function loadGame() {
         const savedGame = localStorage.getItem(`pokemonGame_${currentUser}`);
         if (savedGame) {
             const gameData = JSON.parse(savedGame);
-                collection = gameData.collection || [];
+            collection = gameData.collection || [];
             pokecoins = gameData.pokecoins || 0;
             boosterCount = gameData.boosterCount || 0;
             commonCount = gameData.commonCount || 0;
             rareCount = gameData.rareCount || 0;
             ultraRareCount = gameData.ultraRareCount || 0;
             playtime = gameData.playtime || 0;
+            extraChance = gameData.extraChance || 0;
             updateUI();
         } else {
             // Réinitialiser les variables si aucune sauvegarde n'est trouvée
@@ -322,10 +355,12 @@ function loadGame() {
             rareCount = 0;
             ultraRareCount = 0;
             playtime = 0;
+            extraChance = 0;
             updateUI();
         }
         // Démarrer le suivi du temps de jeu
         startPlaytimeTracking();
+        logAction("Chargement de la partie");
     } else {
         // Rediriger vers la page de connexion si aucun utilisateur n'est connecté
         window.location.href = 'login.html';
@@ -344,6 +379,25 @@ function startPlaytimeTracking() {
 // Fonction pour arrêter le suivi du temps de jeu
 function stopPlaytimeTracking() {
     clearInterval(playtimeInterval);
+}
+
+// Fonction pour acheter une amélioration
+function buyUpgrade(upgrade) {
+    if (upgrade === 'extraChance10' && pokecoins >= 10000) {
+        pokecoins -= 10000;
+        extraChance += 0.1; // Ajouter 10 % de chance en plus
+        alert("Amélioration de 10 % de chance achetée avec succès !");
+        logAction("Amélioration de 10 % de chance achetée");
+    } else if (upgrade === 'extraChance20' && pokecoins >= 20000) {
+        pokecoins -= 20000;
+        extraChance += 0.2; // Ajouter 20 % de chance en plus
+        alert("Amélioration de 20 % de chance achetée avec succès !");
+        logAction("Amélioration de 20 % de chance achetée");
+    } else {
+        alert("Vous n'avez pas assez de Pokécoins pour acheter cette amélioration.");
+    }
+    updateUI();
+    saveGame();
 }
 
 // Mettre à jour les valeurs de l'interface utilisateur
@@ -372,8 +426,8 @@ document.getElementById("open-rare-booster").addEventListener("click", () => {
     }
 });
 document.getElementById("open-legendary-booster").addEventListener("click", () => {
-    if (pokecoins >= 2000) {
-        pokecoins -= 2000;
+    if (pokecoins >= 1000) {
+        pokecoins -= 1000;
         openBooster("legendary");
     } else {
         alert("Vous n'avez pas assez de Pokécoins pour ouvrir un Booster Légendaire.");
@@ -382,3 +436,7 @@ document.getElementById("open-legendary-booster").addEventListener("click", () =
 document.getElementById("view-collection").addEventListener("click", toggleCollection);
 document.getElementById("view-stats").addEventListener("click", toggleStats);
 document.getElementById("view-users").addEventListener("click", toggleUsers);
+document.getElementById("view-shop").addEventListener("click", () => {
+    const shopSection = document.getElementById("shop-section");
+    shopSection.style.display = shopSection.style.display === "none" ? "block" : "none";
+});
