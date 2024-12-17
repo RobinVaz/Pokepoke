@@ -101,7 +101,7 @@ function openBooster(boosterType) {
         boosterCount++;
         updateUI();
         saveGame();
-    }, 2000); // Durée de l'animation avant d'afficher les cartes
+    }, 1000); // Durée de l'animation avant d'afficher les cartes
 }
 
 // Fonction pour mettre à jour la collection
