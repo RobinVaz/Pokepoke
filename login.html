@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Ouverture de Booster Pokémon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Connexion</h1>
+    </header>
+
+    <main>
+        <section id="login-section">
+            <h2>Veuillez vous connecter</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+                <button type="submit">Se connecter</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                localStorage.setItem('currentUser', username);
+
+                // Enregistrer l'utilisateur dans la liste des utilisateurs
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                if (!users.includes(username)) {
+                    users.push(username);
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
