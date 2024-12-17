@@ -4,6 +4,16 @@ const cardsData = [
     { name: "Lépidonille", image: "images/lépidonille.PNG", rarity: "common" },
     { name: "Noadkoko", image: "images/Noadkoko.PNG", rarity: "rare" },
     { name: "Fermite EX", image: "images/fermite ex.PNG", rarity: "ultra-rare" },
+    { name: "Pérégrain", image: "images/peregrain.PNG", rarity: "common" },
+    { name: "Prismillon", image: "images/prismillon.PNG", rarity: "rare" },
+    { name: "Spododo", image: "images/spododo.PNG", rarity: "common" },
+    { name: "Lampignon", image: "images/lampignon.PNG", rarity: "rare" },
+    { name: "Sinistrail", image: "images/sinistrail.PNG", rarity: "rare" },
+    { name: "Zarude", image: "images/zarude.PNG", rarity: "rare" },
+    { name: "Pimito", image: "images/pimito.PNG", rarity: "common" },
+    { name: "Léboulérou", image: "images/leboulerou.PNG", rarity: "common" },
+    { name: "Bérasca", image: "images/bérasca.PNG", rarity: "common" },
+    { name: "Chongjian", image: "images/chongjian.PNG", rarity: "rare" },
 ];
 
 // Probabilités de rareté pour différents types de boosters
