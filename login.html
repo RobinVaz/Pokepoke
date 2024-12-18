@@ -16,8 +16,11 @@
             <h2>Veuillez vous connecter</h2>
             <form id="login-form">
                 <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+                <input type="password" id="password" placeholder="Mot de passe" required>
+                <input type="email" id="email" placeholder="Adresse e-mail (pour récupération de mot de passe)" required>
                 <button type="submit">Se connecter</button>
             </form>
+            <button id="forgot-password-button">Mot de passe oublié ?</button>
         </section>
     </main>
 
@@ -25,17 +28,49 @@
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const username = document.getElementById('username').value.trim();
-            if (username) {
-                localStorage.setItem('currentUser', username);
-
-                // Enregistrer l'utilisateur dans la liste des utilisateurs
+            const password = document.getElementById('password').value.trim();
+            const email = document.getElementById('email').value.trim();
+            if (username && password && email) {
                 let users = JSON.parse(localStorage.getItem('users')) || [];
-                if (!users.includes(username)) {
-                    users.push(username);
-                    localStorage.setItem('users', JSON.stringify(users));
-                }
+                let user = users.find(user => user.username === username || user.email === email);
 
-                window.location.href = 'index.html';
+                if (user) {
+                    // Vérifier le mot de passe
+                    if (user.username === username && user.password === password) {
+                        localStorage.setItem('currentUser', username);
+                        window.location.href = 'index.html';
+                    } else if (user.email === email) {
+                        alert('Cette adresse e-mail est déjà utilisée.');
+                    } else {
+                        alert('Nom d\'utilisateur ou mot de passe incorrect.');
+                    }
+                } else {
+                    // Enregistrer le nouvel utilisateur
+                    if (users.some(user => user.email === email)) {
+                        alert('Cette adresse e-mail est déjà utilisée.');
+                    } else {
+                        users.push({ username, password, email });
+                        localStorage.setItem('users', JSON.stringify(users));
+                        localStorage.setItem('currentUser', username);
+                        window.location.href = 'index.html';
+                    }
+                }
+            }
+        });
+
+        document.getElementById('forgot-password-button').addEventListener('click', function() {
+            const email = prompt('Veuillez entrer votre adresse e-mail :');
+            if (email) {
+                fetch('http://localhost:3000/send-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Erreur:', error));
             }
         });
     </script>
