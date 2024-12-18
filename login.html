@@ -25,12 +25,14 @@
     </main>
 
     <script>
+        const backendUrl = 'https://votre-backend.herokuapp.com'; // Remplacez par l'URL de votre backend
+
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             if (username && password) {
-                fetch('http://localhost:3000/login', {
+                fetch(`${backendUrl}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -55,7 +57,7 @@
             const password = prompt('Veuillez entrer un mot de passe :').trim();
             const email = prompt('Veuillez entrer votre adresse e-mail :').trim();
             if (username && password && email) {
-                fetch('http://localhost:3000/signup', {
+                fetch(`${backendUrl}/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -71,7 +73,7 @@
         document.getElementById('forgot-password-button').addEventListener('click', function() {
             const email = prompt('Veuillez entrer votre adresse e-mail :');
             if (email) {
-                fetch('http://localhost:3000/send-password', {
+                fetch(`${backendUrl}/send-password`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
