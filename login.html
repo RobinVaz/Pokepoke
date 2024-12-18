@@ -13,13 +13,13 @@
 
     <main>
         <section id="login-section">
-            <h2>Veuillez vous connecter</h2>
+            <h2>Veuillez vous connecter ou vous inscrire</h2>
             <form id="login-form">
                 <input type="text" id="username" placeholder="Nom d'utilisateur" required>
                 <input type="password" id="password" placeholder="Mot de passe" required>
-                <input type="email" id="email" placeholder="Adresse e-mail (pour récupération de mot de passe)" required>
                 <button type="submit">Se connecter</button>
             </form>
+            <button id="signup-button">S'inscrire</button>
             <button id="forgot-password-button">Mot de passe oublié ?</button>
         </section>
     </main>
@@ -29,32 +29,42 @@
             event.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            const email = document.getElementById('email').value.trim();
-            if (username && password && email) {
-                let users = JSON.parse(localStorage.getItem('users')) || [];
-                let user = users.find(user => user.username === username || user.email === email);
+            if (username && password) {
+                fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'Connexion réussie.') {
+                        localStorage.setItem('currentUser', username);
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data);
+                    }
+                })
+                .catch(error => console.error('Erreur:', error));
+            }
+        });
 
-                if (user) {
-                    // Vérifier le mot de passe
-                    if (user.username === username && user.password === password) {
-                        localStorage.setItem('currentUser', username);
-                        window.location.href = 'index.html';
-                    } else if (user.email === email) {
-                        alert('Cette adresse e-mail est déjà utilisée.');
-                    } else {
-                        alert('Nom d\'utilisateur ou mot de passe incorrect.');
-                    }
-                } else {
-                    // Enregistrer le nouvel utilisateur
-                    if (users.some(user => user.email === email)) {
-                        alert('Cette adresse e-mail est déjà utilisée.');
-                    } else {
-                        users.push({ username, password, email });
-                        localStorage.setItem('users', JSON.stringify(users));
-                        localStorage.setItem('currentUser', username);
-                        window.location.href = 'index.html';
-                    }
-                }
+        document.getElementById('signup-button').addEventListener('click', function() {
+            const username = prompt('Veuillez entrer un nom d\'utilisateur :').trim();
+            const password = prompt('Veuillez entrer un mot de passe :').trim();
+            const email = prompt('Veuillez entrer votre adresse e-mail :').trim();
+            if (username && password && email) {
+                fetch('http://localhost:3000/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password, email })
+                })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Erreur:', error));
             }
         });
 
