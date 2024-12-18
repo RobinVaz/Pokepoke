@@ -18,6 +18,7 @@
         <button id="view-shop">Boutique</button>
         <span id="pokecoin-count">Pokécoins : 0</span>
         <span id="logs-link-container"></span>
+        <button id="logout-button">Déconnexion</button>
     </header>
 
     <main>
@@ -138,6 +139,12 @@
 
         // Appeler addIconsToUsers après avoir peuplé la liste des utilisateurs
         document.addEventListener('DOMContentLoaded', addIconsToUsers);
+
+        // Déconnexion
+        document.getElementById('logout-button').addEventListener('click', function() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        });
     </script>
     <script src="script.js"></script>
 </body>

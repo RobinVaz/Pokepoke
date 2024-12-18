@@ -309,6 +309,50 @@ h1 {
     color: #fff; /* Texte encore plus clair */
 }
 
+/* Styles pour la page de connexion */
+#login-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #111; /* Fond sombre */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+}
+
+#login-form input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#login-form button {
+    background-color: #444; /* Fond légèrement plus clair */
+    color: #fff; /* Texte blanc */
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s; /* Animation fluide */
+}
+
+#login-form button:hover {
+    background-color: #666; /* Fond encore plus clair au survol */
+    transform: scale(1.05); /* Léger agrandissement au survol */
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     header {
