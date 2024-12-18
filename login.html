@@ -25,30 +25,17 @@
     </main>
 
     <script>
-        const backendUrl = 'https://votre-backend.herokuapp.com'; // Remplacez par l'URL de votre backend
-
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            if (username && password) {
-                fetch(`${backendUrl}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                })
-                .then(response => response.text())
-                .then(data => {
-                    if (data === 'Connexion réussie.') {
-                        localStorage.setItem('currentUser', username);
-                        window.location.href = 'index.html';
-                    } else {
-                        alert(data);
-                    }
-                })
-                .catch(error => console.error('Erreur:', error));
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                localStorage.setItem('currentUser', username);
+                window.location.href = 'index.html';
+            } else {
+                alert('Nom d\'utilisateur ou mot de passe incorrect.');
             }
         });
 
@@ -57,32 +44,27 @@
             const password = prompt('Veuillez entrer un mot de passe :').trim();
             const email = prompt('Veuillez entrer votre adresse e-mail :').trim();
             if (username && password && email) {
-                fetch(`${backendUrl}/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password, email })
-                })
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(error => console.error('Erreur:', error));
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === username || u.email === email)) {
+                    alert('Nom d\'utilisateur ou adresse e-mail déjà utilisé.');
+                } else {
+                    users.push({ username, password, email });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    alert('Inscription réussie.');
+                }
             }
         });
 
         document.getElementById('forgot-password-button').addEventListener('click', function() {
             const email = prompt('Veuillez entrer votre adresse e-mail :');
             if (email) {
-                fetch(`${backendUrl}/send-password`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email })
-                })
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(error => console.error('Erreur:', error));
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.email === email);
+                if (user) {
+                    alert(`Votre mot de passe est : ${user.password}`);
+                } else {
+                    alert('Aucun utilisateur trouvé avec cette adresse e-mail.');
+                }
             }
         });
     </script>
