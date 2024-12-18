@@ -312,7 +312,19 @@ window.addEventListener("click", function(event) {
     }
 });
 
-// Fonction pour sauvegarder la partie
+// Fonction pour générer un checksum basé sur les données de jeu
+function generateChecksum(data) {
+    const jsonString = JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < jsonString.length; i++) {
+        const char = jsonString.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+// Fonction pour sauvegarder la partie avec checksum
 function saveGame() {
     if (currentUser) {
         const gameData = {
@@ -325,46 +337,57 @@ function saveGame() {
             playtime,
             extraChance
         };
+        const checksum = generateChecksum(gameData);
         localStorage.setItem(`pokemonGame_${currentUser}`, JSON.stringify(gameData));
+        localStorage.setItem(`pokemonGameChecksum_${currentUser}`, checksum);
         logAction("Sauvegarde de la partie");
     }
 }
 
-// Fonction pour charger la partie
+// Fonction pour charger la partie avec vérification de checksum
 function loadGame() {
     currentUser = localStorage.getItem('currentUser');
     if (currentUser) {
         const savedGame = localStorage.getItem(`pokemonGame_${currentUser}`);
-        if (savedGame) {
+        const savedChecksum = localStorage.getItem(`pokemonGameChecksum_${currentUser}`);
+        if (savedGame && savedChecksum) {
             const gameData = JSON.parse(savedGame);
-            collection = gameData.collection || [];
-            pokecoins = gameData.pokecoins || 0;
-            boosterCount = gameData.boosterCount || 0;
-            commonCount = gameData.commonCount || 0;
-            rareCount = gameData.rareCount || 0;
-            ultraRareCount = gameData.ultraRareCount || 0;
-            playtime = gameData.playtime || 0;
-            extraChance = gameData.extraChance || 0;
-            updateUI();
+            const checksum = generateChecksum(gameData);
+            if (checksum.toString() === savedChecksum) {
+                collection = gameData.collection || [];
+                pokecoins = gameData.pokecoins || 0;
+                boosterCount = gameData.boosterCount || 0;
+                commonCount = gameData.commonCount || 0;
+                rareCount = gameData.rareCount || 0;
+                ultraRareCount = gameData.ultraRareCount || 0;
+                playtime = gameData.playtime || 0;
+                extraChance = gameData.extraChance || 0;
+                updateUI();
+            } else {
+                alert("Données de jeu corrompues. Réinitialisation des données.");
+                resetGame();
+            }
         } else {
-            // Réinitialiser les variables si aucune sauvegarde n'est trouvée
-            collection = [];
-            pokecoins = 0;
-            boosterCount = 0;
-            commonCount = 0;
-            rareCount = 0;
-            ultraRareCount = 0;
-            playtime = 0;
-            extraChance = 0;
-            updateUI();
+            resetGame();
         }
-        // Démarrer le suivi du temps de jeu
         startPlaytimeTracking();
         logAction("Chargement de la partie");
     } else {
-        // Rediriger vers la page de connexion si aucun utilisateur n'est connecté
         window.location.href = 'login.html';
     }
+}
+
+// Fonction pour réinitialiser la partie
+function resetGame() {
+    collection = [];
+    pokecoins = 0;
+    boosterCount = 0;
+    commonCount = 0;
+    rareCount = 0;
+    ultraRareCount = 0;
+    playtime = 0;
+    extraChance = 0;
+    updateUI();
 }
 
 // Fonction pour démarrer le suivi du temps de jeu

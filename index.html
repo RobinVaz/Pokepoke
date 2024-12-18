@@ -208,6 +208,12 @@
                 alert(`Vous devez jouer au moins ${minutes} minutes pour réclamer ce bonus.`);
             }
         }
+
+        // Réinitialiser les données en cas de corruption
+        function resetGame() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
     </script>
     <script src="script.js"></script>
 </body>
