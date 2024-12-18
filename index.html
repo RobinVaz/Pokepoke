@@ -36,6 +36,7 @@
         <!-- Collection Section -->
         <section id="collection-section" style="display: none;">
             <h2>Ma Collection</h2>
+            <input type="text" id="search-bar" placeholder="Rechercher une carte...">
             <div id="collection-container"></div>
         </section>
 
@@ -144,6 +145,20 @@
         document.getElementById('logout-button').addEventListener('click', function() {
             localStorage.removeItem('currentUser');
             window.location.href = 'login.html';
+        });
+
+        // Fonction de recherche dans la collection
+        document.getElementById('search-bar').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll('#collection-container .card');
+            cards.forEach(card => {
+                const cardName = card.querySelector('p').textContent.toLowerCase();
+                if (cardName.includes(query)) {
+                    card.style.display = 'inline-block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
     </script>
     <script src="script.js"></script>
