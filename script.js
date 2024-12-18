@@ -223,9 +223,9 @@ function toggleUsers() {
 
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userData = users.map(user => {
-            const savedGame = JSON.parse(localStorage.getItem(`pokemonGame_${user}`));
+            const savedGame = JSON.parse(localStorage.getItem(`pokemonGame_${user.username}`));
             return {
-                username: user,
+                username: user.username,
                 collectionSize: savedGame ? savedGame.collection.length : 0,
                 boosterCount: savedGame ? savedGame.boosterCount : 0,
                 pokecoins: savedGame ? savedGame.pokecoins : 0
@@ -235,7 +235,7 @@ function toggleUsers() {
         // Afficher la liste des utilisateurs
         users.forEach(user => {
             const userElement = document.createElement("li");
-            userElement.innerHTML = `<i class="fas fa-user"></i> ${user}`;
+            userElement.innerHTML = `<i class="fas fa-user"></i> ${user.username}`;
             usersList.appendChild(userElement);
         });
 
@@ -324,7 +324,7 @@ function generateChecksum(data) {
     return hash;
 }
 
-// Fonction pour sauvegarder la partie avec checksum
+// Fonction pour sauvegarder la partie avec Firebase
 function saveGame() {
     if (currentUser) {
         const gameData = {
@@ -337,23 +337,18 @@ function saveGame() {
             playtime,
             extraChance
         };
-        const checksum = generateChecksum(gameData);
-        localStorage.setItem(`pokemonGame_${currentUser}`, JSON.stringify(gameData));
-        localStorage.setItem(`pokemonGameChecksum_${currentUser}`, checksum);
+        firebase.database().ref('users/' + currentUser).set(gameData);
         logAction("Sauvegarde de la partie");
     }
 }
 
-// Fonction pour charger la partie avec vérification de checksum
+// Fonction pour charger la partie avec Firebase
 function loadGame() {
     currentUser = localStorage.getItem('currentUser');
     if (currentUser) {
-        const savedGame = localStorage.getItem(`pokemonGame_${currentUser}`);
-        const savedChecksum = localStorage.getItem(`pokemonGameChecksum_${currentUser}`);
-        if (savedGame && savedChecksum) {
-            const gameData = JSON.parse(savedGame);
-            const checksum = generateChecksum(gameData);
-            if (checksum.toString() === savedChecksum) {
+        firebase.database().ref('users/' + currentUser).once('value').then((snapshot) => {
+            const gameData = snapshot.val();
+            if (gameData) {
                 collection = gameData.collection || [];
                 pokecoins = gameData.pokecoins || 0;
                 boosterCount = gameData.boosterCount || 0;
@@ -364,14 +359,11 @@ function loadGame() {
                 extraChance = gameData.extraChance || 0;
                 updateUI();
             } else {
-                alert("Données de jeu corrompues. Réinitialisation des données.");
                 resetGame();
             }
-        } else {
-            resetGame();
-        }
-        startPlaytimeTracking();
-        logAction("Chargement de la partie");
+            startPlaytimeTracking();
+            logAction("Chargement de la partie");
+        });
     } else {
         window.location.href = 'login.html';
     }
@@ -539,6 +531,52 @@ function updateUI() {
 // Charger la partie au démarrage
 window.addEventListener('load', loadGame);
 window.addEventListener('beforeunload', stopPlaytimeTracking);
+
+// Fonction pour créer un compte utilisateur avec Firebase
+function signup(username, password, email) {
+    const usersRef = firebase.database().ref('users');
+    usersRef.orderByChild('username').equalTo(username).once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            alert('Nom d\'utilisateur déjà utilisé.');
+        } else {
+            usersRef.orderByChild('email').equalTo(email).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    alert('Adresse e-mail déjà utilisée.');
+                } else {
+                    const newUser = {
+                        username,
+                        password,
+                        email,
+                        collection: [],
+                        pokecoins: 0,
+                        boosterCount: 0,
+                        commonCount: 0,
+                        rareCount: 0,
+                        ultraRareCount: 0,
+                        playtime: 0,
+                        extraChance: 0
+                    };
+                    usersRef.child(username).set(newUser);
+                    alert('Inscription réussie.');
+                }
+            });
+        }
+    });
+}
+
+// Fonction pour se connecter avec Firebase
+function login(username, password) {
+    const usersRef = firebase.database().ref('users');
+    usersRef.child(username).once('value', (snapshot) => {
+        const user = snapshot.val();
+        if (user && user.password === password) {
+            localStorage.setItem('currentUser', username);
+            window.location.href = 'index.html';
+        } else {
+            alert('Nom d\'utilisateur ou mot de passe incorrect.');
+        }
+    });
+}
 
 // Gestion des boutons pour différents types de boosters
 document.getElementById("open-free-booster").addEventListener("click", () => openBooster("free"));
