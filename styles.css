@@ -385,6 +385,154 @@ h1 {
     transform: scale(1.05); /* Léger agrandissement au survol */
 }
 
+/* Rubriques de la boutique */
+.shop-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #111; /* Fond sombre */
+    border: 2px solid #444;
+    border-radius: 10px;
+}
+
+.shop-section h2 {
+    text-align: center;
+    color: #fff; /* Texte clair */
+}
+
+.shop-item {
+    background-color: #222; /* Fond légèrement plus clair */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: #ccc; /* Texte clair */
+    font-size: 1.1em;
+    text-align: center;
+    position: relative;
+}
+
+.shop-item .shop-icon {
+    font-size: 30px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.shop-item button {
+    background-color: #444; /* Fond légèrement plus clair */
+    color: #fff; /* Texte blanc */
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s; /* Animation fluide */
+}
+
+.shop-item button:hover {
+    background-color: #666; /* Fond encore plus clair au survol */
+    transform: scale(1.05); /* Léger agrandissement au survol */
+}
+
+/* Roue de bonus quotidien */
+#daily-bonus-wheel {
+    width: 500px; /* Augmenter la largeur */
+    height: 500px; /* Augmenter la hauteur */
+    border: 10px solid #444;
+    border-radius: 50%;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    transform: rotate(0deg); /* Réinitialiser la rotation */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Ombre pour un effet de profondeur */
+    background: radial-gradient(circle, #333 0%, #111 100%); /* Dégradé pour un effet de profondeur */
+    transition: transform 4s ease-out; /* Animation de rotation */
+}
+
+#daily-bonus-wheel .segment {
+    width: 50%;
+    height: 50%;
+    background-color: #333;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px; /* Augmenter la taille de la police */
+    font-weight: bold;
+    border: 1px solid #444; /* Bordure pour séparer les segments */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Ombre pour améliorer la lisibilité */
+    padding: 15px; /* Ajouter du padding pour éviter que le texte soit coupé */
+    text-align: center; /* Centrer le texte */
+}
+
+/* Flèche de la roue */
+#wheel-arrow {
+    display: none; /* Masquer la flèche de la roue */
+}
+
+/* Flèche blanche pour pointer vers le bonus obtenu */
+#bonus-pointer {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid white; /* Couleur blanche */
+    position: absolute;
+    top: -30px; /* Positionner au-dessus de la roue */
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg); /* Pointer vers le bas */
+    z-index: 20; /* Assurez-vous que la flèche est au-dessus de la roue */
+}
+
+#spin-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#spin-button:hover {
+    background-color: #666;
+    transform: scale(1.05);
+}
+
+/* Style pour le bouton de bonus quotidien */
+#daily-bonus-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#daily-bonus-button:hover {
+    background-color: #666;
+    transform: scale(1.05);
+}
+
+#daily-bonus-message {
+    text-align: center;
+    color: #ffcc00; /* Couleur dorée pour le message */
+    font-size: 18px;
+    margin-top: 10px;
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     header {

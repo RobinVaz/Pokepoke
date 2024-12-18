@@ -66,18 +66,33 @@
         </section>
 
         <!-- Boutique Section -->
-        <section id="shop-section" style="display: none;">
+        <section id="shop-section">
             <h2>Boutique</h2>
             <div id="shop-container">
-                <div class="shop-item">
-                    <i class="fas fa-clover shop-icon"></i>
-                    <p>Obtenir 10 % de chance en plus</p>
-                    <button onclick="buyUpgrade('extraChance10')">Acheter (10000 Pokécoins)</button>
+                <!-- Rubrique Améliorations -->
+                <div class="shop-section">
+                    <h2>Améliorations</h2>
+                    <div class="shop-item">
+                        <i class="fas fa-clover shop-icon"></i>
+                        <p>Obtenir 10 % de chance en plus</p>
+                        <button onclick="buyUpgrade('extraChance10')">Acheter (10000 Pokécoins)</button>
+                    </div>
+                    <div class="shop-item">
+                        <i class="fas fa-clover shop-icon"></i>
+                        <p>Obtenir 20 % de chance en plus</p>
+                        <button onclick="buyUpgrade('extraChance20')">Acheter (20000 Pokécoins)</button>
+                    </div>
                 </div>
-                <div class="shop-item">
-                    <i class="fas fa-clover shop-icon"></i>
-                    <p>Obtenir 20 % de chance en plus</p>
-                    <button onclick="buyUpgrade('extraChance20')">Acheter (20000 Pokécoins)</button>
+                <!-- Bonus quotidien basé sur le temps de jeu -->
+                <div class="shop-section">
+                    <h2>Bonus Quotidien</h2>
+                    <div id="daily-bonus-container">
+                        <button id="bonus-1min" onclick="claimTimeBasedBonus(1)">Réclamer Bonus 1 minute (100 Pokécoins)</button>
+                        <button id="bonus-5min" onclick="claimTimeBasedBonus(5)">Réclamer Bonus 5 minutes (200 Pokécoins)</button>
+                        <button id="bonus-10min" onclick="claimTimeBasedBonus(10)">Réclamer Bonus 10 minutes (300 Pokécoins)</button>
+                        <button id="bonus-30min" onclick="claimTimeBasedBonus(30)">Réclamer Bonus 30 minutes (400 Pokécoins)</button>
+                        <button id="bonus-60min" onclick="claimTimeBasedBonus(60)">Réclamer Bonus 1 heure (500 Pokécoins)</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -163,6 +178,36 @@
                 }
             });
         });
+
+        // Fonction pour réclamer un bonus basé sur le temps de jeu
+        function claimTimeBasedBonus(minutes) {
+            const playtime = parseInt(document.getElementById('playtime').textContent);
+            if (playtime >= minutes) {
+                const pokecoins = parseInt(document.getElementById('pokecoin-count').textContent.split(' ')[1]);
+                let bonus = 0;
+                switch (minutes) {
+                    case 1:
+                        bonus = 100;
+                        break;
+                    case 5:
+                        bonus = 200;
+                        break;
+                    case 10:
+                        bonus = 300;
+                        break;
+                    case 30:
+                        bonus = 400;
+                        break;
+                    case 60:
+                        bonus = 500;
+                        break;
+                }
+                document.getElementById('pokecoin-count').textContent = `Pokécoins : ${pokecoins + bonus}`;
+                alert(`Vous avez réclamé ${bonus} Pokécoins pour ${minutes} minutes de jeu!`);
+            } else {
+                alert(`Vous devez jouer au moins ${minutes} minutes pour réclamer ce bonus.`);
+            }
+        }
     </script>
     <script src="script.js"></script>
 </body>

@@ -400,6 +400,99 @@ function buyUpgrade(upgrade) {
     saveGame();
 }
 
+// Fonction pour tourner la roue de bonus quotidien
+function spinWheel() {
+    const wheel = document.getElementById("daily-bonus-wheel");
+    const spinButton = document.getElementById("spin-button");
+    const segments = [100, 200, 300, 400, 500, 600, 700, 1000, 10000]; // Ajuster les valeurs des segments
+    const probabilities = [0.2, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1, 0.05, 0.01]; // Probabilités ajustées
+    const random = Math.random();
+    let accumulatedProbability = 0;
+    let selectedIndex = 0;
+
+    for (let i = 0; i < probabilities.length; i++) {
+        accumulatedProbability += probabilities[i];
+        if (random <= accumulatedProbability) {
+            selectedIndex = i;
+            break;
+        }
+    }
+
+    const degrees = selectedIndex * 40 + 360 * 3; // Ajuster l'angle du segment
+
+    // Réinitialiser la rotation avant de commencer une nouvelle animation
+    wheel.style.transition = "none";
+    wheel.style.transform = "rotate(0deg)";
+
+    // Forcer le reflow pour appliquer la réinitialisation
+    wheel.offsetHeight;
+
+    // Appliquer la nouvelle rotation avec animation
+    wheel.style.transition = "transform 4s ease-out";
+    wheel.style.transform = `rotate(${degrees}deg)`;
+
+    spinButton.disabled = true; // Désactiver le bouton pendant le spin
+
+    setTimeout(() => {
+        const bonus = segments[selectedIndex];
+        pokecoins += bonus;
+        alert(`Félicitations ! Vous avez gagné ${bonus} Pokécoins.`);
+        logAction(`Gagné ${bonus} Pokécoins avec la roue de bonus quotidien`);
+        updateUI();
+        saveGame();
+        spinButton.disabled = false; // Réactiver le bouton après le spin
+    }, 4000); // Durée de l'animation
+}
+
+// Fonction pour réclamer le bonus quotidien
+function claimDailyBonus() {
+    const dailyBonusButton = document.getElementById("daily-bonus-button");
+    const dailyBonusMessage = document.getElementById("daily-bonus-message");
+    const bonusAmounts = [100, 200, 300, 400, 500];
+    const randomBonus = bonusAmounts[Math.floor(Math.random() * bonusAmounts.length)];
+
+    pokecoins += randomBonus;
+    dailyBonusMessage.textContent = `Félicitations ! Vous avez gagné ${randomBonus} Pokécoins.`;
+    logAction(`Réclamé ${randomBonus} Pokécoins avec le bonus quotidien`);
+    updateUI();
+    saveGame();
+
+    // Désactiver le bouton après avoir réclamé le bonus
+    dailyBonusButton.disabled = true;
+    dailyBonusButton.textContent = "Bonus réclamé";
+}
+
+// Fonction pour réclamer un bonus basé sur le temps de jeu
+function claimTimeBasedBonus(minutes) {
+    const bonusAmounts = {
+        1: 100,
+        5: 200,
+        10: 300,
+        30: 400,
+        60: 500
+    };
+
+    const claimedBonuses = JSON.parse(localStorage.getItem('claimedBonuses')) || {};
+
+    if (claimedBonuses[minutes]) {
+        alert(`Vous avez déjà réclamé le bonus pour ${minutes} minutes de jeu.`);
+        return;
+    }
+
+    if (playtime >= minutes) {
+        pokecoins += bonusAmounts[minutes];
+        alert(`Félicitations ! Vous avez gagné ${bonusAmounts[minutes]} Pokécoins.`);
+        logAction(`Réclamé ${bonusAmounts[minutes]} Pokécoins pour ${minutes} minutes de jeu`);
+        document.getElementById(`bonus-${minutes}min`).disabled = true;
+        claimedBonuses[minutes] = true;
+        localStorage.setItem('claimedBonuses', JSON.stringify(claimedBonuses));
+        updateUI();
+        saveGame();
+    } else {
+        alert(`Vous devez jouer pendant au moins ${minutes} minutes pour réclamer ce bonus.`);
+    }
+}
+
 // Mettre à jour les valeurs de l'interface utilisateur
 function updateUI() {
     document.getElementById("collection-count").textContent = collection.length;
@@ -409,6 +502,15 @@ function updateUI() {
     document.getElementById("rare-count").textContent = rareCount;
     document.getElementById("ultra-rare-count").textContent = ultraRareCount;
     document.getElementById("playtime").textContent = Math.floor(playtime / 60) + " heures " + (playtime % 60) + " minutes";
+
+    const claimedBonuses = JSON.parse(localStorage.getItem('claimedBonuses')) || {};
+
+    // Activer/désactiver les boutons de bonus en fonction du temps de jeu et des bonus déjà réclamés
+    document.getElementById("bonus-1min").disabled = playtime < 1 || claimedBonuses[1];
+    document.getElementById("bonus-5min").disabled = playtime < 5 || claimedBonuses[5];
+    document.getElementById("bonus-10min").disabled = playtime < 10 || claimedBonuses[10];
+    document.getElementById("bonus-30min").disabled = playtime < 30 || claimedBonuses[30];
+    document.getElementById("bonus-60min").disabled = playtime < 60 || claimedBonuses[60];
 }
 
 // Charger la partie au démarrage
