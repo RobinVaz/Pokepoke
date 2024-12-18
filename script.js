@@ -464,7 +464,7 @@ function spinWheel() {
         updateUI();
         saveGame();
         spinButton.disabled = false; // Réactiver le bouton après le spin
-    }, 4000); // Durée de l'animation
+    }, 1000); // Durée de l'animation
 }
 
 // Fonction pour réclamer le bonus quotidien
