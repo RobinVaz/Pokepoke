@@ -5,6 +5,9 @@ const openBoosterButtonSSP = document.getElementById('open-booster-ssp');
 const openBoosterButtonSCR = document.getElementById('open-booster-scr');
 const resetCollectionButton = document.getElementById('reset-collection');
 const searchBar = document.getElementById('search-bar');
+const progressContainer = document.getElementById('progress-container');
+const collectionProgress = document.getElementById('collection-progress');
+const progressText = document.getElementById('progress-text');
 const modal = document.getElementById('card-modal');
 const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-name');
@@ -55,6 +58,7 @@ function collectCard(pokemon) {
         const editionContainer = getOrCreateEditionContainer(pokemon.edition);
         createCard(pokemon, editionContainer);
         saveCollectedPokemons();
+        updateProgress();
     }
 }
 
@@ -94,6 +98,7 @@ function resetCollection() {
     collectedContainer.innerHTML = '';
     collectedPokemons = [];
     localStorage.removeItem('collectedPokemons');
+    updateProgress();
 }
 
 function openModal(pokemon) {
@@ -120,6 +125,7 @@ function loadCollectedPokemons() {
             createCard(pokemon, editionContainer);
         });
     }
+    updateProgress();
 }
 
 function getOrCreateEditionContainer(edition) {
@@ -147,6 +153,7 @@ function toggleEdition(edition) {
     if (selectedEditionContainer) {
         selectedEditionContainer.style.display = 'flex';
     }
+    updateProgress(edition);
 }
 
 function filterCards() {
@@ -162,8 +169,29 @@ function filterCards() {
     });
 }
 
-openBoosterButtonSSP.addEventListener('click', () => openBooster('SSP'));
-openBoosterButtonSCR.addEventListener('click', () => openBooster('SCR'));
+function updateProgress(edition = 'SSP') {
+    const totalCards = pokemons.filter(pokemon => pokemon.edition === edition).length;
+    const collectedCards = collectedPokemons.filter(pokemon => pokemon.edition === edition).length;
+    collectionProgress.max = totalCards;
+    collectionProgress.value = collectedCards;
+    progressText.textContent = `${collectedCards}/${totalCards}`;
+}
+
+function disableButton(button, duration) {
+    button.disabled = true;
+    setTimeout(() => {
+        button.disabled = false;
+    }, duration);
+}
+
+openBoosterButtonSSP.addEventListener('click', () => {
+    openBooster('SSP');
+    disableButton(openBoosterButtonSSP, 3000); // Disable for 3 seconds
+});
+openBoosterButtonSCR.addEventListener('click', () => {
+    openBooster('SCR');
+    disableButton(openBoosterButtonSCR, 3000); // Disable for 3 seconds
+});
 resetCollectionButton.addEventListener('click', resetCollection);
 searchBar.addEventListener('input', filterCards);
 closeButton.addEventListener('click', closeModal);

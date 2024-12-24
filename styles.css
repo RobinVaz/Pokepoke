@@ -129,6 +129,23 @@ button:active {
     transform: scale(1.05);
 }
 
+#progress-container {
+    margin-top: 20px;
+}
+
+#collection-progress {
+    width: 80%;
+    height: 20px;
+    border-radius: 10px;
+    background-color: #444;
+}
+
+#progress-text {
+    display: block;
+    margin-top: 10px;
+    color: #fff;
+}
+
 .modal {
     display: none;
     position: fixed;
