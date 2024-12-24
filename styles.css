@@ -67,32 +67,6 @@ main {
     margin-top: 20px;
 }
 
-#album-container {
-    margin-top: 20px;
-}
-
-.album {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.placeholder {
-    background-color: #444;
-    border: 1px solid #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-    margin: 10px;
-    width: 150px;
-    height: 210px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.2em;
-}
-
 .edition-container {
     display: none;
     flex-wrap: wrap;
@@ -275,4 +249,39 @@ button:active {
 .edition-logo {
     width: 50px;
     margin-top: 5px;
+}
+
+#album-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.album-card {
+    background-color: #333;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    width: 150px;
+    height: 200px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+}
+
+.album-card img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.album-card p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    color: #fff;
 }

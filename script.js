@@ -10,6 +10,7 @@ const searchBar = document.getElementById('search-bar');
 const progressContainer = document.getElementById('progress-container');
 const collectionProgress = document.getElementById('collection-progress');
 const progressText = document.getElementById('progress-text');
+const albumContainer = document.getElementById('album-container');
 const modal = document.getElementById('card-modal');
 const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-name');
@@ -22,18 +23,35 @@ let collectedPokemons = [];
 async function loadPokemons() {
     const response = await fetch('pokemons.json');
     pokemons = await response.json();
-    loadCollectedPokemons();
     createAlbum();
+    loadCollectedPokemons();
 }
 
 function createAlbum() {
-    const albumContainer = document.getElementById('collected-container');
     albumContainer.innerHTML = '';
     pokemons.forEach((pokemon, index) => {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder';
-        placeholder.textContent = index + 1;
-        albumContainer.appendChild(placeholder);
+        const card = document.createElement('div');
+        card.className = 'album-card';
+        card.dataset.index = index;
+        
+        const number = document.createElement('p');
+        number.textContent = `#${index + 1}`;
+        card.appendChild(number);
+        
+        albumContainer.appendChild(card);
+    });
+}
+
+function updateAlbum() {
+    collectedPokemons.forEach(pokemon => {
+        const index = pokemons.findIndex(p => p.name === pokemon.name && p.image === pokemon.image);
+        if (index !== -1) {
+            const card = albumContainer.querySelector(`.album-card[data-index="${index}"]`);
+            card.innerHTML = ''; // Clear the placeholder number
+            const img = document.createElement('img');
+            img.src = pokemon.image;
+            card.appendChild(img);
+        }
     });
 }
 
@@ -62,10 +80,18 @@ function createCard(pokemon, container) {
     
     card.onclick = () => openModal(pokemon);
     
-    // Replace the placeholder with the actual card
-    const albumContainer = document.getElementById('collected-container');
-    const placeholder = albumContainer.children[pokemons.indexOf(pokemon)];
-    albumContainer.replaceChild(card, placeholder);
+    // Insert the card in the correct order based on rarity
+    const rarityOrder = ['common', 'rare', 'ultra-rare', 'gold'];
+    const existingCards = Array.from(container.children);
+    const insertIndex = existingCards.findIndex(existingCard => {
+        const existingRarity = existingCard.querySelector('p').textContent.split(' ')[1];
+        return rarityOrder.indexOf(existingRarity) > rarityOrder.indexOf(pokemon.rarity);
+    });
+    if (insertIndex === -1) {
+        container.appendChild(card);
+    } else {
+        container.insertBefore(card, existingCards[insertIndex]);
+    }
     
     setTimeout(() => card.classList.add('show'), 100);
 }
@@ -73,9 +99,11 @@ function createCard(pokemon, container) {
 function collectCard(pokemon) {
     if (!collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image)) {
         collectedPokemons.push(pokemon);
-        createCard(pokemon, collectedContainer);
+        const editionContainer = getOrCreateEditionContainer(pokemon.edition);
+        createCard(pokemon, editionContainer);
         saveCollectedPokemons();
         updateProgress();
+        updateAlbum();
     }
 }
 
@@ -119,8 +147,8 @@ function resetCollection() {
     collectedContainer.innerHTML = '';
     collectedPokemons = [];
     localStorage.removeItem('collectedPokemons');
-    createAlbum();
     updateProgress();
+    createAlbum();
 }
 
 function openModal(pokemon) {
@@ -143,10 +171,40 @@ function loadCollectedPokemons() {
     if (savedPokemons) {
         collectedPokemons = JSON.parse(savedPokemons);
         collectedPokemons.forEach(pokemon => {
-            createCard(pokemon, collectedContainer);
+            const editionContainer = getOrCreateEditionContainer(pokemon.edition);
+            createCard(pokemon, editionContainer);
         });
     }
     updateProgress();
+    updateAlbum();
+}
+
+function getOrCreateEditionContainer(edition) {
+    let editionContainer = document.getElementById(`collected-${edition}`);
+    if (!editionContainer) {
+        editionContainer = document.createElement('div');
+        editionContainer.id = `collected-${edition}`;
+        editionContainer.className = 'edition-container';
+        const editionTitle = document.createElement('h3');
+        editionTitle.textContent = `Edition ${edition}`;
+        editionTitle.className = 'edition-title';
+        editionTitle.onclick = () => toggleEdition(edition);
+        collectedContainer.appendChild(editionTitle);
+        collectedContainer.appendChild(editionContainer);
+    }
+    return editionContainer;
+}
+
+function toggleEdition(edition) {
+    const allEditionContainers = document.querySelectorAll('.edition-container');
+    allEditionContainers.forEach(container => {
+        container.style.display = 'none';
+    });
+    const selectedEditionContainer = document.getElementById(`collected-${edition}`);
+    if (selectedEditionContainer) {
+        selectedEditionContainer.style.display = 'flex';
+    }
+    updateProgress(edition);
 }
 
 function filterCards() {
