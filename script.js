@@ -1,6 +1,8 @@
 const cardContainer = document.getElementById('card-container');
 const collectedContainer = document.getElementById('collected-container');
 const boosterContainer = document.getElementById('booster-container');
+const boosterAnimationContainer = document.getElementById('booster-animation-container');
+const boosterAnimation = document.getElementById('booster-animation');
 const openBoosterButtonSSP = document.getElementById('open-booster-ssp');
 const openBoosterButtonSCR = document.getElementById('open-booster-scr');
 const resetCollectionButton = document.getElementById('reset-collection');
@@ -21,6 +23,18 @@ async function loadPokemons() {
     const response = await fetch('pokemons.json');
     pokemons = await response.json();
     loadCollectedPokemons();
+    createAlbum();
+}
+
+function createAlbum() {
+    const albumContainer = document.getElementById('collected-container');
+    albumContainer.innerHTML = '';
+    pokemons.forEach((pokemon, index) => {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'placeholder';
+        placeholder.textContent = index + 1;
+        albumContainer.appendChild(placeholder);
+    });
 }
 
 function createCard(pokemon, container) {
@@ -48,15 +62,18 @@ function createCard(pokemon, container) {
     
     card.onclick = () => openModal(pokemon);
     
-    container.appendChild(card);
+    // Replace the placeholder with the actual card
+    const albumContainer = document.getElementById('collected-container');
+    const placeholder = albumContainer.children[pokemons.indexOf(pokemon)];
+    albumContainer.replaceChild(card, placeholder);
+    
     setTimeout(() => card.classList.add('show'), 100);
 }
 
 function collectCard(pokemon) {
     if (!collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image)) {
         collectedPokemons.push(pokemon);
-        const editionContainer = getOrCreateEditionContainer(pokemon.edition);
-        createCard(pokemon, editionContainer);
+        createCard(pokemon, collectedContainer);
         saveCollectedPokemons();
         updateProgress();
     }
@@ -64,16 +81,20 @@ function collectCard(pokemon) {
 
 function openBooster(edition) {
     boosterContainer.innerHTML = '';
-    const boosterPokemons = [];
-    const filteredPokemons = pokemons.filter(pokemon => pokemon.edition === edition);
-    for (let i = 0; i < 3; i++) {
-        const randomPokemon = getRandomPokemon(filteredPokemons);
-        boosterPokemons.push(randomPokemon);
-        collectCard(randomPokemon);
-    }
-    boosterPokemons.forEach((pokemon, index) => {
-        setTimeout(() => createCard(pokemon, boosterContainer), index * 500);
-    });
+    boosterAnimationContainer.style.display = 'flex';
+    setTimeout(() => {
+        boosterAnimationContainer.style.display = 'none';
+        const boosterPokemons = [];
+        const filteredPokemons = pokemons.filter(pokemon => pokemon.edition === edition);
+        for (let i = 0; i < 3; i++) {
+            const randomPokemon = getRandomPokemon(filteredPokemons);
+            boosterPokemons.push(randomPokemon);
+            collectCard(randomPokemon);
+        }
+        boosterPokemons.forEach((pokemon, index) => {
+            setTimeout(() => createCard(pokemon, boosterContainer), index * 500);
+        });
+    }, 2000); // Duration of the animation
 }
 
 function getRandomPokemon(filteredPokemons) {
@@ -98,6 +119,7 @@ function resetCollection() {
     collectedContainer.innerHTML = '';
     collectedPokemons = [];
     localStorage.removeItem('collectedPokemons');
+    createAlbum();
     updateProgress();
 }
 
@@ -121,39 +143,10 @@ function loadCollectedPokemons() {
     if (savedPokemons) {
         collectedPokemons = JSON.parse(savedPokemons);
         collectedPokemons.forEach(pokemon => {
-            const editionContainer = getOrCreateEditionContainer(pokemon.edition);
-            createCard(pokemon, editionContainer);
+            createCard(pokemon, collectedContainer);
         });
     }
     updateProgress();
-}
-
-function getOrCreateEditionContainer(edition) {
-    let editionContainer = document.getElementById(`collected-${edition}`);
-    if (!editionContainer) {
-        editionContainer = document.createElement('div');
-        editionContainer.id = `collected-${edition}`;
-        editionContainer.className = 'edition-container';
-        const editionTitle = document.createElement('h3');
-        editionTitle.textContent = `Edition ${edition}`;
-        editionTitle.className = 'edition-title';
-        editionTitle.onclick = () => toggleEdition(edition);
-        collectedContainer.appendChild(editionTitle);
-        collectedContainer.appendChild(editionContainer);
-    }
-    return editionContainer;
-}
-
-function toggleEdition(edition) {
-    const allEditionContainers = document.querySelectorAll('.edition-container');
-    allEditionContainers.forEach(container => {
-        container.style.display = 'none';
-    });
-    const selectedEditionContainer = document.getElementById(`collected-${edition}`);
-    if (selectedEditionContainer) {
-        selectedEditionContainer.style.display = 'flex';
-    }
-    updateProgress(edition);
 }
 
 function filterCards() {

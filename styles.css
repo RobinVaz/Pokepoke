@@ -12,6 +12,18 @@ header {
     padding: 20px;
 }
 
+header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pokeball-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
 main {
     padding: 20px;
 }
@@ -20,11 +32,65 @@ main {
     margin-bottom: 20px;
 }
 
+#booster-animation-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#booster-animation {
+    width: 200px;
+    height: auto;
+    animation: boosterAnimation 2s forwards;
+}
+
+@keyframes boosterAnimation {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
 #card-container, #booster-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 20px;
+}
+
+#album-container {
+    margin-top: 20px;
+}
+
+.album {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.placeholder {
+    background-color: #444;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    width: 150px;
+    height: 210px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.2em;
 }
 
 .edition-container {
