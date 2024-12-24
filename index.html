@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Cartes Pokémon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Jeu de Cartes Pokémon</h1>
+    </header>
+    <main>
+        <button id="open-booster-ssp">Ouvrir un Booster SSP</button>
+        <button id="open-booster-scr">Ouvrir un Booster SCR</button>
+        <div id="booster-container">
+            <!-- Les cartes du booster seront affichées ici -->
+        </div>
+        <div id="card-container">
+            <!-- Les cartes seront générées ici -->
+        </div>
+        <h2>Cartes Collectées</h2>
+        <input type="text" id="search-bar" placeholder="Rechercher une carte...">
+        <div id="collected-container">
+            <!-- Les cartes collectées seront affichées ici -->
+        </div>
+        <button id="reset-collection">Réinitialiser la Collection</button>
+    </main>
+
+    <!-- Modal Structure -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <img id="modal-image" src="" alt="Card Image">
+            <h2 id="modal-name"></h2>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
