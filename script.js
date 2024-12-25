@@ -82,7 +82,7 @@ function updateAlbum() {
 
 function createCard(pokemon, container) {
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = `card ${pokemon.rarity.toLowerCase()}`; // Add rarity class
     
     const img = document.createElement('img');
     img.src = pokemon.image;

@@ -138,6 +138,22 @@ main {
     transform: scale(1);
 }
 
+.card.common {
+    background-color: #808080; /* Gray for common */
+}
+
+.card.rare {
+    background-color: #0000FF; /* Blue for rare */
+}
+
+.card.ultra-rare {
+    background-color: #FFA500; /* Orange for ultra-rare */
+}
+
+.card.gold {
+    background-color: #FFFF00; /* Yellow for gold */
+}
+
 button {
     background-color: #000;
     color: #fff;
