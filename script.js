@@ -53,6 +53,8 @@ function createAlbum() {
         number.textContent = `#${index + 1}`;
         card.appendChild(number);
 
+        card.onclick = () => openModal(pokemon); // Make the card clickable to open the modal
+
         if (pokemon.edition === 'STB') {
             albumSTBTitle.style.display = 'block';
             albumContainerSTB.style.display = 'flex';
@@ -76,7 +78,6 @@ function createAlbum() {
             spacer.appendChild(label);
             albumContainer.appendChild(spacer);
             albumSCRTitle.style.display = 'block';
-            albumContainerSCR.style.display = 'flex';
         }
     });
 }
@@ -91,6 +92,7 @@ function updateAlbum() {
                 const img = document.createElement('img');
                 img.src = pokemon.image;
                 card.appendChild(img);
+                card.onclick = () => openModal(pokemon); // Ensure the card is clickable to open the modal
             }
         }
     });
@@ -128,7 +130,7 @@ function createCard(pokemon, container, isNew = false) {
         editionImage.className = 'edition-logo';
         card.appendChild(editionImage);
     }
-    
+
     card.onclick = () => openModal(pokemon);
     
     // Insert the card in the correct order based on rarity
