@@ -8,13 +8,16 @@
 </head>
 <body>
     <header>
-        <h1><img src="https://i.etsystatic.com/33357979/r/il/e1dfcd/3584257734/il_794xN.3584257734_bfy9.jpg" alt="Pokéball Logo" class="pokeball-logo"> Pokepoke</h1>
+        <div class="header-content">
+            <h1><img src="https://i.etsystatic.com/33357979/r/il/e1dfcd/3584257734/il_794xN.3584257734_bfy9.jpg" alt="Pokéball Logo" class="pokeball-logo"> Pokepoke</h1>
+        </div>
+        <img src="https://www.clipartmax.com/png/middle/121-1212770_pokedex-vector-style-by-cristopheros-pokedex-transparent.png" alt="Profile Image" class="profile-image" id="profile-image">
     </header>
     <main>
         <button id="open-booster-ssp">Ouvrir un Booster SSP</button>
         <button id="open-booster-scr">Ouvrir un Booster SCR</button>
         <div id="booster-animation-container">
-            <img id="booster-animation" src="https://static.pkmcards.fr/products/fr/boosters/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-booster-etincelles-deferlantes-latias-et-latios.webp" alt="Booster Pack">
+            <img id="booster-animation" src="" alt="Booster Pack">
         </div>
         <div id="booster-container">
             <!-- Les cartes du booster seront affichées ici -->
@@ -22,7 +25,7 @@
         <div id="card-container">
             <!-- Les cartes seront générées ici -->
         </div>
-        <h2>Cartes Collectées</h2>
+        <h2>Collection</h2>
         <input type="text" id="search-bar" placeholder="Rechercher une carte...">
         <div id="progress-container">
             <progress id="collection-progress" value="0" max="100"></progress>

@@ -16,9 +16,12 @@ const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-name');
 const modalDescription = document.getElementById('modal-description');
 const closeButton = document.querySelector('.close-button');
+const profileImage = document.getElementById('profile-image');
 
 let pokemons = [];
 let collectedPokemons = [];
+let boostersOpened = 0;
+let startTime = Date.now();
 
 async function loadPokemons() {
     const response = await fetch('pokemons.json');
@@ -51,6 +54,7 @@ function updateAlbum() {
             const img = document.createElement('img');
             img.src = pokemon.image;
             card.appendChild(img);
+            card.onclick = () => openModal(pokemon);
         }
     });
 }
@@ -74,6 +78,11 @@ function createCard(pokemon, container) {
     if (pokemon.edition === 'SSP') {
         const editionImage = document.createElement('img');
         editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SSP.png';
+        editionImage.className = 'edition-logo';
+        card.appendChild(editionImage);
+    } else if (pokemon.edition === 'SCR') {
+        const editionImage = document.createElement('img');
+        editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SCR.png';
         editionImage.className = 'edition-logo';
         card.appendChild(editionImage);
     }
@@ -108,8 +117,11 @@ function collectCard(pokemon) {
 }
 
 function openBooster(edition) {
+    boostersOpened++;
     boosterContainer.innerHTML = '';
+    boosterAnimation.src = edition === 'SSP' ? 'https://lesgentlemendujeu.com/11166-large_default/pokemon-ev08-boosters-etincelles-deferlantes.jpg' : 'https://www.ludifolie.com/49553-large_default/pokemon-ev07-couronne-stellaire-booster.jpg';
     boosterAnimationContainer.style.display = 'flex';
+    boosterAnimation.style.animation = 'boosterTremble 2s forwards';
     setTimeout(() => {
         boosterAnimationContainer.style.display = 'none';
         const boosterPokemons = [];
@@ -154,7 +166,18 @@ function resetCollection() {
 function openModal(pokemon) {
     modalImage.src = pokemon.image;
     modalName.textContent = pokemon.name;
-    modalDescription.textContent = pokemon.description;
+    modalDescription.textContent = `Edition: ${pokemon.edition}`;
+    if (pokemon.edition === 'SSP') {
+        const editionImage = document.createElement('img');
+        editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SSP.png';
+        editionImage.className = 'edition-logo';
+        modalDescription.appendChild(editionImage);
+    } else if (pokemon.edition === 'SCR') {
+        const editionImage = document.createElement('img');
+        editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SCR.png';
+        editionImage.className = 'edition-logo';
+        modalDescription.appendChild(editionImage);
+    }
     modal.style.display = 'block';
 }
 
@@ -196,15 +219,18 @@ function getOrCreateEditionContainer(edition) {
 }
 
 function toggleEdition(edition) {
-    const allEditionContainers = document.querySelectorAll('.edition-container');
-    allEditionContainers.forEach(container => {
-        container.style.display = 'none';
-    });
     const selectedEditionContainer = document.getElementById(`collected-${edition}`);
     if (selectedEditionContainer) {
-        selectedEditionContainer.style.display = 'flex';
+        if (selectedEditionContainer.style.display === 'flex') {
+            selectedEditionContainer.style.display = 'none';
+        } else {
+            const allEditionContainers = document.querySelectorAll('.edition-container');
+            allEditionContainers.forEach(container => {
+                container.style.display = 'none';
+            });
+            selectedEditionContainer.style.display = 'flex';
+        }
     }
-    updateProgress(edition);
 }
 
 function filterCards() {
@@ -220,9 +246,9 @@ function filterCards() {
     });
 }
 
-function updateProgress(edition = 'SSP') {
-    const totalCards = pokemons.filter(pokemon => pokemon.edition === edition).length;
-    const collectedCards = collectedPokemons.filter(pokemon => pokemon.edition === edition).length;
+function updateProgress() {
+    const totalCards = pokemons.length;
+    const collectedCards = collectedPokemons.length;
     collectionProgress.max = totalCards;
     collectionProgress.value = collectedCards;
     progressText.textContent = `${collectedCards}/${totalCards}`;
@@ -233,6 +259,13 @@ function disableButton(button, duration) {
     setTimeout(() => {
         button.disabled = false;
     }, duration);
+}
+
+function redirectToStats() {
+    const totalTime = Date.now() - startTime;
+    localStorage.setItem('boostersOpened', boostersOpened);
+    localStorage.setItem('totalTime', totalTime);
+    window.location.href = 'stats.html';
 }
 
 openBoosterButtonSSP.addEventListener('click', () => {
@@ -246,6 +279,7 @@ openBoosterButtonSCR.addEventListener('click', () => {
 resetCollectionButton.addEventListener('click', resetCollection);
 searchBar.addEventListener('input', filterCards);
 closeButton.addEventListener('click', closeModal);
+profileImage.addEventListener('click', redirectToStats);
 window.addEventListener('click', (event) => {
     if (event.target === modal) {
         closeModal();
