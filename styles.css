@@ -314,6 +314,20 @@ button:active {
     margin-top: 20px;
 }
 
+#album-container-stb {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#album-container-scr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .album-card {
     background-color: #333;
     border: 1px solid #fff;

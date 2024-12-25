@@ -5,6 +5,7 @@ const boosterAnimationContainer = document.getElementById('booster-animation-con
 const boosterAnimation = document.getElementById('booster-animation');
 const openBoosterButtonSSP = document.getElementById('open-booster-ssp');
 const openBoosterButtonSCR = document.getElementById('open-booster-scr');
+const openBoosterButtonSTB = document.getElementById('open-booster-stb'); // New button for STB
 const resetCollectionButton = document.getElementById('reset-collection');
 const searchBar = document.getElementById('search-bar');
 const progressContainer = document.getElementById('progress-container');
@@ -12,7 +13,9 @@ const collectionProgress = document.getElementById('collection-progress');
 const progressText = document.getElementById('progress-text');
 const albumContainer = document.getElementById('album-container');
 const albumContainerSCR = document.getElementById('album-container-scr');
+const albumContainerSTB = document.getElementById('album-container-stb'); // New container for STB
 const albumSCRTitle = document.getElementById('album-scr-title');
+const albumSTBTitle = document.getElementById('album-stb-title'); // New title for STB
 const modal = document.getElementById('card-modal');
 const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-name');
@@ -35,8 +38,11 @@ async function loadPokemons() {
 function createAlbum() {
     albumContainer.innerHTML = '';
     albumContainerSCR.innerHTML = '';
+    albumContainerSTB.innerHTML = ''; // Clear the STB album container
     albumSCRTitle.style.display = 'none';
+    albumSTBTitle.style.display = 'none'; // Hide the STB title initially
     albumContainerSCR.style.display = 'none';
+    albumContainerSTB.style.display = 'none'; // Hide the STB container initially
 
     pokemons.forEach((pokemon, index) => {
         const card = document.createElement('div');
@@ -47,7 +53,17 @@ function createAlbum() {
         number.textContent = `#${index + 1}`;
         card.appendChild(number);
 
-        albumContainer.appendChild(card);
+        if (pokemon.edition === 'STB') {
+            albumSTBTitle.style.display = 'block';
+            albumContainerSTB.style.display = 'flex';
+            albumContainerSTB.appendChild(card);
+        } else if (pokemon.edition === 'SCR') {
+            albumSCRTitle.style.display = 'block';
+            albumContainerSCR.style.display = 'flex';
+            albumContainerSCR.appendChild(card);
+        } else {
+            albumContainer.appendChild(card);
+        }
 
         if (index === 251) {
             const spacer = document.createElement('div');
@@ -57,7 +73,6 @@ function createAlbum() {
             spacer.style.alignItems = 'center';
             spacer.style.justifyContent = 'center';
             const label = document.createElement('h2');
-            label.textContent = 'Album SCR';
             spacer.appendChild(label);
             albumContainer.appendChild(spacer);
             albumSCRTitle.style.display = 'block';
@@ -70,12 +85,13 @@ function updateAlbum() {
     collectedPokemons.forEach(pokemon => {
         const index = pokemons.findIndex(p => p.name === pokemon.name && p.image === pokemon.image);
         if (index !== -1) {
-            const card = albumContainer.querySelector(`.album-card[data-index="${index}"]`);
-            card.innerHTML = ''; // Clear the placeholder number
-            const img = document.createElement('img');
-            img.src = pokemon.image;
-            card.appendChild(img);
-            card.onclick = () => openModal(pokemon);
+            const card = document.querySelector(`.album-card[data-index="${index}"]`);
+            if (card) {
+                card.innerHTML = ''; // Clear the placeholder number
+                const img = document.createElement('img');
+                img.src = pokemon.image;
+                card.appendChild(img);
+            }
         }
     });
 }
@@ -106,13 +122,11 @@ function createCard(pokemon, container, isNew = false) {
         editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SCR.png';
         editionImage.className = 'edition-logo';
         card.appendChild(editionImage);
-    }
-
-    // Add the "new" logo if the card is new
-    if (isNew) {
-        const newLogo = document.createElement('i');
-        newLogo.className = 'fas fa-star new-logo';
-        card.appendChild(newLogo);
+    } else if (pokemon.edition === 'STB') {
+        const editionImage = document.createElement('img');
+        editionImage.src = 'https://www.pokecardex.com/assets/images/logos/BS.png';
+        editionImage.className = 'edition-logo';
+        card.appendChild(editionImage);
     }
     
     card.onclick = () => openModal(pokemon);
@@ -138,7 +152,8 @@ function createCard(pokemon, container, isNew = false) {
 }
 
 function collectCard(pokemon) {
-    if (!collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image)) {
+    const isNew = !collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image);
+    if (isNew) {
         collectedPokemons.push(pokemon);
         const editionContainer = getOrCreateEditionContainer(pokemon.edition);
         createCard(pokemon, editionContainer);
@@ -152,24 +167,30 @@ function openBooster(edition) {
     boostersOpened++;
     localStorage.setItem('boostersOpened', boostersOpened); // Save boosters opened to localStorage
     boosterContainer.innerHTML = '';
-    boosterAnimation.src = edition === 'SSP' ? 'https://lesgentlemendujeu.com/11166-large_default/pokemon-ev08-boosters-etincelles-deferlantes.jpg' : 'https://www.ludifolie.com/49553-large_default/pokemon-ev07-couronne-stellaire-booster.jpg';
+    boosterAnimation.src = edition === 'SSP' ? 'https://lesgentlemendujeu.com/11166-large_default/pokemon-ev08-boosters-etincelles-deferlantes.jpg' : 
+                          edition === 'SCR' ? 'https://www.ludifolie.com/49553-large_default/pokemon-ev07-couronne-stellaire-booster.jpg' :
+                          edition === 'STB' ? 'https://i.seadn.io/gae/qw_fizCKFFTBRQtCsWFcTbdE1-lKZ81z-tLfQ1BDCtmx0MYZ_by6JZFeQ3dt2wSrDupJ7iBgcJ7tW7VMuwYmzDgfkjeqpm6NeCGAZg?auto=format&dpr=1&w=1000' : ''; // Image for STB
     boosterAnimationContainer.style.display = 'flex';
     boosterAnimation.style.animation = 'boosterTremble 2s forwards';
     setTimeout(() => {
         boosterAnimationContainer.style.display = 'none';
         const boosterPokemons = [];
         const filteredPokemons = pokemons.filter(pokemon => pokemon.edition === edition);
-        for (let i = 0; i < 5; i++) { // Change 3 to 5
+        for (let i = 0; i < 5; i++) {
             const randomPokemon = getRandomPokemon(filteredPokemons);
             boosterPokemons.push(randomPokemon);
-            const isNew = !collectedPokemons.some(p => p.name === randomPokemon.name && p.image === randomPokemon.image);
             collectCard(randomPokemon);
         }
-        boosterPokemons.forEach((pokemon, index) => {
-            const isNew = !collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image);
-            setTimeout(() => createCard(pokemon, boosterContainer, isNew), index * 500);
-        });
+        displayBoosterCards(boosterPokemons);
     }, 2000); // Duration of the animation
+}
+
+function displayBoosterCards(boosterPokemons) {
+    boosterPokemons.forEach((pokemon, index) => {
+        setTimeout(() => {
+            createCard(pokemon, boosterContainer);
+        }, index * 500); // Display each card with a delay of 500ms
+    });
 }
 
 function getRandomPokemon(filteredPokemons) {
@@ -220,6 +241,11 @@ function openModal(pokemon) {
     } else if (pokemon.edition === 'SCR') {
         const editionImage = document.createElement('img');
         editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SCR.png';
+        editionImage.className = 'edition-logo';
+        modalDescription.appendChild(editionImage);
+    } else if (pokemon.edition === 'STB') {
+        const editionImage = document.createElement('img');
+        editionImage.src = 'https://www.pokecardex.com/assets/images/logos/BS.png';
         editionImage.className = 'edition-logo';
         modalDescription.appendChild(editionImage);
     }
@@ -325,6 +351,10 @@ openBoosterButtonSSP.addEventListener('click', () => {
 openBoosterButtonSCR.addEventListener('click', () => {
     openBooster('SCR');
     disableButton(openBoosterButtonSCR, 3000); // Disable for 3 seconds
+});
+openBoosterButtonSTB.addEventListener('click', () => {
+    openBooster('STB'); // Add event listener for STB button
+    disableButton(openBoosterButtonSTB, 3000); // Disable for 3 seconds
 });
 resetCollectionButton.addEventListener('click', resetCollection);
 searchBar.addEventListener('input', filterCards);
