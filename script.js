@@ -11,6 +11,8 @@ const progressContainer = document.getElementById('progress-container');
 const collectionProgress = document.getElementById('collection-progress');
 const progressText = document.getElementById('progress-text');
 const albumContainer = document.getElementById('album-container');
+const albumContainerSCR = document.getElementById('album-container-scr');
+const albumSCRTitle = document.getElementById('album-scr-title');
 const modal = document.getElementById('card-modal');
 const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-name');
@@ -32,6 +34,10 @@ async function loadPokemons() {
 
 function createAlbum() {
     albumContainer.innerHTML = '';
+    albumContainerSCR.innerHTML = '';
+    albumSCRTitle.style.display = 'none';
+    albumContainerSCR.style.display = 'none';
+
     pokemons.forEach((pokemon, index) => {
         const card = document.createElement('div');
         card.className = 'album-card';
@@ -40,8 +46,23 @@ function createAlbum() {
         const number = document.createElement('p');
         number.textContent = `#${index + 1}`;
         card.appendChild(number);
-        
+
         albumContainer.appendChild(card);
+
+        if (index === 252) {
+            const spacer = document.createElement('div');
+            spacer.style.width = '100%';
+            spacer.style.height = '200px';
+            spacer.style.display = 'flex';
+            spacer.style.alignItems = 'center';
+            spacer.style.justifyContent = 'center';
+            const label = document.createElement('h2');
+            label.textContent = 'Album SCR';
+            spacer.appendChild(label);
+            albumContainer.appendChild(spacer);
+            albumSCRTitle.style.display = 'block';
+            albumContainerSCR.style.display = 'flex';
+        }
     });
 }
 
@@ -138,16 +159,20 @@ function openBooster(edition) {
 }
 
 function getRandomPokemon(filteredPokemons) {
-    const random = Math.random() * 100;
-    if (random < 80) {
-        return getRandomPokemonByRarity(filteredPokemons, 'common');
-    } else if (random < 94) {
-        return getRandomPokemonByRarity(filteredPokemons, 'rare');
-    } else if (random < 94.8) {
-        return getRandomPokemonByRarity(filteredPokemons, 'ultra-rare');
+    const random = Math.random();
+    let rarity;
+
+    if (random < 0.8) {
+        rarity = 'common';
+    } else if (random < 0.99) {
+        rarity = 'rare';
+    } else if (random < 0.998) {
+        rarity = 'ultra-rare';
     } else {
-        return getRandomPokemonByRarity(filteredPokemons, 'gold');
+        rarity = 'gold';
     }
+
+    return getRandomPokemonByRarity(filteredPokemons, rarity);
 }
 
 function getRandomPokemonByRarity(filteredPokemons, rarity) {
