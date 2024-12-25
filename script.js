@@ -80,7 +80,7 @@ function updateAlbum() {
     });
 }
 
-function createCard(pokemon, container) {
+function createCard(pokemon, container, isNew = false) {
     const card = document.createElement('div');
     card.className = `card ${pokemon.rarity.toLowerCase()}`; // Add rarity class
     
@@ -107,6 +107,13 @@ function createCard(pokemon, container) {
         editionImage.className = 'edition-logo';
         card.appendChild(editionImage);
     }
+
+    // Add the "new" logo if the card is new
+    if (isNew) {
+        const newLogo = document.createElement('i');
+        newLogo.className = 'fas fa-star new-logo';
+        card.appendChild(newLogo);
+    }
     
     card.onclick = () => openModal(pokemon);
     
@@ -123,7 +130,11 @@ function createCard(pokemon, container) {
         container.insertBefore(card, existingCards[insertIndex]);
     }
     
-    setTimeout(() => card.classList.add('show'), 100);
+    // Revert to original animation
+    setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+    }, 100);
 }
 
 function collectCard(pokemon) {
@@ -139,6 +150,7 @@ function collectCard(pokemon) {
 
 function openBooster(edition) {
     boostersOpened++;
+    localStorage.setItem('boostersOpened', boostersOpened); // Save boosters opened to localStorage
     boosterContainer.innerHTML = '';
     boosterAnimation.src = edition === 'SSP' ? 'https://lesgentlemendujeu.com/11166-large_default/pokemon-ev08-boosters-etincelles-deferlantes.jpg' : 'https://www.ludifolie.com/49553-large_default/pokemon-ev07-couronne-stellaire-booster.jpg';
     boosterAnimationContainer.style.display = 'flex';
@@ -150,10 +162,12 @@ function openBooster(edition) {
         for (let i = 0; i < 5; i++) { // Change 3 to 5
             const randomPokemon = getRandomPokemon(filteredPokemons);
             boosterPokemons.push(randomPokemon);
+            const isNew = !collectedPokemons.some(p => p.name === randomPokemon.name && p.image === randomPokemon.image);
             collectCard(randomPokemon);
         }
         boosterPokemons.forEach((pokemon, index) => {
-            setTimeout(() => createCard(pokemon, boosterContainer), index * 500);
+            const isNew = !collectedPokemons.some(p => p.name === pokemon.name && p.image === pokemon.image);
+            setTimeout(() => createCard(pokemon, boosterContainer, isNew), index * 500);
         });
     }, 2000); // Duration of the animation
 }
@@ -294,10 +308,15 @@ function disableButton(button, duration) {
 
 function redirectToStats() {
     const totalTime = Date.now() - startTime;
-    localStorage.setItem('boostersOpened', boostersOpened);
-    localStorage.setItem('totalTime', totalTime);
+    localStorage.setItem('totalTime', totalTime); // Save total time to localStorage
     window.location.href = 'stats.html';
 }
+
+// Load saved statistics on page load
+document.addEventListener('DOMContentLoaded', () => {
+    boostersOpened = parseInt(localStorage.getItem('boostersOpened')) || 0;
+    startTime = Date.now() - (parseInt(localStorage.getItem('totalTime')) || 0);
+});
 
 openBoosterButtonSSP.addEventListener('click', () => {
     openBooster('SSP');

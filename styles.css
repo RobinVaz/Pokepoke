@@ -90,6 +90,7 @@ main {
 }
 
 .card {
+    position: relative; /* Ensure the card is positioned relative for absolute positioning of the new logo */
     background-color: #333;
     border: 1px solid #fff;
     border-radius: 10px;
@@ -117,6 +118,14 @@ main {
 .card p {
     font-size: 0.9em;
     color: #ccc;
+}
+
+.card .new-logo {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 1.5em;
+    color: #FFD700; /* Yellow color for the new logo */
 }
 
 .card button {
