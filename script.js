@@ -147,7 +147,7 @@ function openBooster(edition) {
         boosterAnimationContainer.style.display = 'none';
         const boosterPokemons = [];
         const filteredPokemons = pokemons.filter(pokemon => pokemon.edition === edition);
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 5; i++) { // Change 3 to 5
             const randomPokemon = getRandomPokemon(filteredPokemons);
             boosterPokemons.push(randomPokemon);
             collectCard(randomPokemon);
