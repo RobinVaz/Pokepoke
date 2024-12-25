@@ -253,6 +253,22 @@ button:active {
     color: #ccc;
 }
 
+.modal-content.common {
+    background-color: #808080; /* Gray for common */
+}
+
+.modal-content.rare {
+    background-color: #0000FF; /* Blue for rare */
+}
+
+.modal-content.ultra-rare {
+    background-color: #FFA500; /* Orange for ultra-rare */
+}
+
+.modal-content.gold {
+    background-color: #FFFF00; /* Yellow for gold */
+}
+
 .close-button {
     color: #aaa;
     float: right;

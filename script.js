@@ -49,7 +49,7 @@ function createAlbum() {
 
         albumContainer.appendChild(card);
 
-        if (index === 252) {
+        if (index === 251) {
             const spacer = document.createElement('div');
             spacer.style.width = '100%';
             spacer.style.height = '200px';
@@ -192,6 +192,12 @@ function openModal(pokemon) {
     modalImage.src = pokemon.image;
     modalName.textContent = pokemon.name;
     modalDescription.textContent = `Edition: ${pokemon.edition}`;
+    
+    // Remove previous rarity classes from modal content
+    modal.querySelector('.modal-content').classList.remove('common', 'rare', 'ultra-rare', 'gold');
+    // Add the new rarity class to modal content
+    modal.querySelector('.modal-content').classList.add(pokemon.rarity.toLowerCase());
+
     if (pokemon.edition === 'SSP') {
         const editionImage = document.createElement('img');
         editionImage.src = 'https://www.pokecardex.com/assets/images/logos/SSP.png';
